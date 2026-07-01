@@ -1,21 +1,8 @@
-import HabitCard from "./HabitCard.jsx"
+import HabitCard from "./HabitCard"
+import habits from "../data/habits"
 
 function HabitList()
 {
-  const habits = [
-    {
-      name: "Exercise",
-      streak: 5
-    },
-    {
-      name: "Reading",
-      streak: 2
-    },
-    {
-      name: "Coding",
-      streak: 10
-    }
-  ]
 
   return(
     <div>

@@ -1,9 +1,14 @@
+import { useState } from "react";
 import Navbar from "./components/Navbar"
 import HabitCard from "./components/HabitCard"
 import HabitList from "./components/HabitList"
+import AddHabitMdal from "./components/AddHabitModal"
+import DashboardHeader from "./components/DashboardHeader";
 
 function App()
 {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className = "min-h-screen bg-gray-100">
       <Navbar />
@@ -20,11 +25,16 @@ function App()
             </p>
           </div>
 
-          <button className = "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+          <button onClick = {() => setIsModalOpen(true)} className = "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
             + Add Habits
           </button>
+
+          {isModalOpen && <AddHabitMdal />}
         
         </div>
+
+        <DashboardHeader onOpen = {setIsModalOpen}/>
+
         <HabitList />
       </main>
     </div>
