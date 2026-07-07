@@ -1,15 +1,21 @@
 const habits = [
 {
+    id: 1,
     name: "Exercise",
-    streak: 5
+    streak: 5,
+    completions: []
 },
 {
+    id: 2,
     name: "Reading",
-    streak: 2
+    streak: 2,
+    completions: []
 },
 {
+    id: 3,
     name: "Coding",
-    streak: 10
+    streak: 10,
+    completions: []
 }
 ]
 

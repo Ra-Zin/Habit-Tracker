@@ -1,16 +1,17 @@
 import HabitCard from "./HabitCard"
-import habits from "../data/habits"
 
-function HabitList()
+function HabitList({habits, onCompleteHabit})
 {
-
   return(
     <div>
         {habits.map((habit) => (
             <HabitCard 
-            key = {habit.name}
+            key = {habit.id}
+            habitId = {habit.id}
             habitName = {habit.name}
             streak = {habit.streak}
+            stats = {habit.stats}
+            onCompleteHabit = {onCompleteHabit}
             />
         ))}
     </div>
