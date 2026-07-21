@@ -2,9 +2,14 @@ import StatCard from "./StatCard";
 import { Flame } from "@phosphor-icons/react/dist/ssr/Flame";
 import { BookOpen } from "@phosphor-icons/react/dist/ssr/BookOpen";
 import { CheckCircle } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { isCompletedToday } from "../utils/streak";
 
-function DashboardHeader({onOpen})
+function DashboardHeader({onOpen, habits})
 {
+    const totalHabits = habits.length;
+    const doneToday = habits.filter(habit => isCompletedToday(habit.completions)).length;
+    const bestSTreak = habits.reduce((max, habit) => Math.max(max, habit.streak || 0), 0);
+
     return(
         <div className = "bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
             <div className = "flex justify-between items-start">
@@ -40,7 +45,7 @@ function DashboardHeader({onOpen})
 
                     <StatCard
                     icon={CheckCircle}
-                    value="2/4"
+                    value={`${doneToday}/${totalHabits}`}
                     label="Today's Progress"
                     color="text-green-500"
                     />

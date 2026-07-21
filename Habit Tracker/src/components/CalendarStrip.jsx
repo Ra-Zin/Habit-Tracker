@@ -1,14 +1,22 @@
-function CalendarStrip()
-{
-    const week = [
-        {day: "M", completed: true},
-        {day: "T", completed: true},
-        {day: "W", completed: true},
-        {day: "T", completed: false},
-        {day: "F", completed: false},
-        {day: "S", completed: true},
-        {day: "S", completed: true},
-    ]
+function CalendarStrip({ completions })
+{const dayLabels = ["S", "M", "T", "W", "T", "F", "S"];
+
+    const week = []
+
+    for (let i = 6; i >= 0; i--)
+    {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+
+        const dateString = date.toISOString().split("T")[0];
+
+        week.push({
+            day: dayLabels[date.getDay()],
+            completed: completions ? completions.includes(dateString):false
+        })
+
+    }
+
     return(
         <div className = "flex gap-3 mt-4">
             {week.map((item, index) =>(

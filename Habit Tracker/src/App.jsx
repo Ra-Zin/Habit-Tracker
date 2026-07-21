@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import{BrowserRouter, Routes, Route} from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HabitCard from "./components/HabitCard";
@@ -6,20 +6,60 @@ import HabitList from "./components/HabitList";
 import AddHabitModal from "./components/AddHabitModal";
 import DashboardHeader from "./components/DashboardHeader";
 import sampleHabits from "./data/habits";
+import { calculateStreak, getTodayString } from "./utils/streak";
 
 function App()
 {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [habits, setHabits] = useState(sampleHabits);
+  const [habits, setHabits] = useState(() =>
+    sampleHabits.map(habit => ({
+      ...habit,
+      streak: calculateStreak(habit.completions)
+    }))
+  );
+
+  useEffect(() => {
+    setHabits(prevHabits => 
+      prevHabits.map(habit => ({
+        ...habit, 
+        streak: calculateStreak(habit.completions)
+      }))
+    );
+  }, []);
 
   function handleAddHabit(newHabit)
   {
-    setHabits([...habits, newHabit]);
+    setHabits([...habits, newHabit]); 
   }
 
   function handleCompleteHabit(habitId)
   {
-    console.log("Completed habit:", habitId);
+    const today = getTodayString();
+
+    setHabits(habits.map(habit => {
+      if (habit.id === habitId)
+      {
+        // toggle: if today is already ticked, un-tick it, otherwise add it
+        const alreadyDone = habit.completions.includes(today);
+
+        const updatedCompletions = alreadyDone
+          ? habit.completions.filter(date => date !== today)
+          : [...habit.completions, today];
+
+        return {
+          ...habit,
+          completions: updatedCompletions,
+          streak: calculateStreak(updatedCompletions)
+        }
+      }
+
+      return habit;
+    }))
+  }
+
+  function handleDeleteHabit(habitId)
+  {
+    setHabits(habits.filter(habit => habit.id !== habitId));
   }
 
   return (
@@ -44,9 +84,9 @@ function App()
         
         </div>
 
-        <DashboardHeader onOpen = {setIsModalOpen}/>
+        <DashboardHeader onOpen = {setIsModalOpen} habits = {habits}/>
         
-        <HabitList habits = {habits} onCompleteHabit = {handleCompleteHabit}/>
+        <HabitList habits = {habits} onCompleteHabit = {handleCompleteHabit} onDeleteHabit = {handleDeleteHabit}/>
 
         {isModalOpen && <AddHabitModal onClose = {setIsModalOpen} onAddHabit = {handleAddHabit}/>}
       </main>

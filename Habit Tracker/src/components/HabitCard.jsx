@@ -1,8 +1,10 @@
 import CalendarStrip from "./CalendarStrip";
 import {Flame} from "@phosphor-icons/react/dist/ssr/Flame";
+import {isCompletedToday} from "../utils/streak";
 
-function HabitCard({habitId, habitName, streak, stats, onCompleteHabit})
+function HabitCard({habitId, habitName, streak, completions, onCompleteHabit, onDeleteHabit})
 {
+    const doneToday = isCompletedToday(completions);
     return (
         <div className = "bg-white rounded-2xl shadow-sm hover:shadow-lg trannsition-all duration-300 p-6 mb-5 border border-gray-100">
 

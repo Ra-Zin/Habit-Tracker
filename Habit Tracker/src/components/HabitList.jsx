@@ -1,6 +1,6 @@
 import HabitCard from "./HabitCard"
 
-function HabitList({habits, onCompleteHabit})
+function HabitList({habits, onCompleteHabit, onDeleteHabit})
 {
   return(
     <div>
@@ -12,6 +12,7 @@ function HabitList({habits, onCompleteHabit})
             streak = {habit.streak}
             stats = {habit.stats}
             onCompleteHabit = {onCompleteHabit}
+            onDeleteHabit = {onDeleteHabit}
             />
         ))}
     </div>
