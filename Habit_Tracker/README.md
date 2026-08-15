@@ -14,10 +14,10 @@ reports what happened, it does not scold.
 
 ## Running it
 
-### Server
+### Backend
 
 ```bash
-cd server
+cd Backend
 cp .env.example .env    # fill in MONGODB_URI and JWT_SECRET
 npm install
 npm run dev             # http://localhost:5000
