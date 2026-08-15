@@ -30,7 +30,7 @@ function Register() {
     setSubmitting(true);
     try {
       await register(username.trim(), email, password);
-      navigate("/", { replace: true });
+      navigate("/dashboard", { replace: true });
     } catch (registerError) {
       setError(
         registerError.response?.data?.error ||
