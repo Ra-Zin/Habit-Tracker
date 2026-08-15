@@ -35,7 +35,6 @@ function ChainPreview() {
 function AuthShell({ title, subtitle, children, footer }) {
   return (
     <div className="grid min-h-dvh bg-surface lg:grid-cols-[1.1fr_1fr]">
-      {/* Artwork rail — desktop only. On small screens the form is the whole page. */}
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-brand-soft p-10 lg:flex xl:p-14">
         <div className="flex items-center gap-2.5">
           <LoopMark className="h-6 w-6 text-brand" />
