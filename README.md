@@ -17,7 +17,7 @@ reports what happened, it does not scold.
 ### Backend
 
 ```bash
-cd Backend
+cd Habit_Tracker/Backend
 cp .env.example .env    # fill in MONGODB_URI and JWT_SECRET
 npm install
 npm run dev             # http://localhost:5000
@@ -35,13 +35,13 @@ npm run dev             # http://localhost:5000
 ### Frontend
 
 ```bash
-cd Frontend
+cd Habit_Tracker/Frontend
 npm install
 npm run dev             # http://localhost:5173
 ```
 
 Set `VITE_API_URL` in `Frontend/.env` if the API is not on
-`http://localhost:5000/api`.
+`http://localhost:5000/api` (see `Frontend/.env.example`).
 
 ## API
 
@@ -105,8 +105,9 @@ disabled entirely under `prefers-reduced-motion`.
 ## Deploying
 
 Backend on Render (`npm start`, set every env var in the dashboard), frontend on
-Netlify (`npm run build`, publish `Frontend/dist`, set `VITE_API_URL`). Add a
-Netlify SPA redirect so client-side routes resolve:
+Netlify (`npm run build`, publish `Frontend/dist`, set `VITE_API_URL`). The SPA
+redirect Netlify needs for client-side routes already ships in
+`Frontend/public/_redirects`:
 
 ```
 /*  /index.html  200
