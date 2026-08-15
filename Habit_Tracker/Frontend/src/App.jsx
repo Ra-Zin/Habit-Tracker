@@ -1,7 +1,7 @@
-import { Routes, Route } from "react-router-dom";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
+import { Navigate, Route, Routes } from "react-router-dom";
+import Login from "./Pages/Login.jsx";
+import Register from "./Pages/Register.jsx";
+import Dashboard from "./Pages/Dashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
@@ -17,6 +17,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

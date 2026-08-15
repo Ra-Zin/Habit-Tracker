@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import AuthShell from "../components/AuthShell.jsx";
+import Field from "../components/Field.jsx";
 
 function Login() {
   const { login } = useAuth();
@@ -11,68 +13,70 @@ function Login() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit(event) {
+    event.preventDefault();
     setError("");
     setSubmitting(true);
     try {
       await login(email, password);
-      navigate("/");
-    } catch (err) {
-      setError(err.response?.data?.error || "Login failed. Please try again.");
-    } finally {
+      navigate("/", { replace: true });
+    } catch (loginError) {
+      setError(
+        loginError.response?.data?.error ||
+          "That email and password did not match an account."
+      );
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-blue-600 mb-1">HabitLoop</h1>
-        <p className="text-gray-500 mb-6">Log in to your account</p>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-semibold transition-colors disabled:opacity-50"
-          >
-            {submitting ? "Logging in..." : "Log In"}
-          </button>
-        </form>
-
-        <p className="text-sm text-gray-500 mt-6 text-center">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600 font-medium hover:underline">
-            Sign up
+    <AuthShell
+      title="Welcome back."
+      subtitle="Pick up where your chain left off."
+      footer={
+        <>
+          No account yet?{" "}
+          <Link to="/register" className="font-semibold text-brand underline underline-offset-4">
+            Create one
           </Link>
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        <Field
+          label="Email"
+          type="email"
+          required
+          autoComplete="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+
+        <Field
+          label="Password"
+          type="password"
+          required
+          autoComplete="current-password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+
+        {error && (
+          <p role="alert" className="rounded-lg bg-rose-soft px-3.5 py-2.5 text-caption font-medium text-rose">
+            {error}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className="min-h-[44px] w-full rounded-lg bg-brand text-sm font-semibold text-on-brand shadow-card transition-[background-color,scale,opacity] duration-150 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-brand-hover active:scale-[0.96] disabled:opacity-50"
+        >
+          {submitting ? "Logging in…" : "Log in"}
+        </button>
+      </form>
+    </AuthShell>
   );
 }
 

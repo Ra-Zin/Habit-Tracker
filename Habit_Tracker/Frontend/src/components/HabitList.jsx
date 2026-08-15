@@ -1,22 +1,20 @@
-import HabitCard from "./HabitCard"
+import HabitCard from "./HabitCard.jsx";
 
-function HabitList({habits, onCompleteHabit, onDeleteHabit})
-{
-  return(
-    <div>
-        {habits.map((habit) => (
-            <HabitCard 
-            key = {habit.id}
-            habitId = {habit.id}
-            habitName = {habit.name}
-            streak = {habit.streak}
-            stats = {habit.stats}
-            onCompleteHabit = {onCompleteHabit}
-            onDeleteHabit = {onDeleteHabit}
-            />
-        ))}
+function HabitList({ habits, onToggleComplete, onDeleteHabit, busyId }) {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {habits.map((habit, index) => (
+        <HabitCard
+          key={habit._id}
+          habit={habit}
+          index={index}
+          isBusy={busyId === habit._id}
+          onToggleComplete={onToggleComplete}
+          onDeleteHabit={onDeleteHabit}
+        />
+      ))}
     </div>
-  )
+  );
 }
 
 export default HabitList;

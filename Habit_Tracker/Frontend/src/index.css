@@ -1,6 +1,294 @@
 @import "tailwindcss";
 
-body{
-        margin: 0;
-        font-family: Arial, sans-serif;
+/* Class-based dark mode (Tailwind v4 needs this declared explicitly). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   HabitLoop design tokens
+
+   Direction: "the ledger". A habit tracker is a private record you keep, so the
+   surfaces read like paper and the data reads like ink. Indigo carries identity,
+   saffron carries streaks (heat you have earned), jade carries completion.
+   Missing a day is deliberately NOT red — a gap in the chain is information,
+   not an error.
+--------------------------------------------------------------------------- */
+
+:root,
+.light {
+  --paper: #f1f0f6;
+  --surface: #ffffff;
+  --surface-2: #f7f6fa;
+  --surface-3: #edebf3;
+
+  --ink: #191324;
+  --ink-2: #4b4459;
+  --ink-3: #6e6680;
+
+  --line: #e4e1ec;
+  --line-strong: #d3cee0;
+
+  --brand: #1E99F7;
+  --brand-hover: #1689E5;
+  --brand-soft: #eeeafe;
+  --brand-ring: #5b3df5;
+
+  --ember: #b06f05;
+  --ember-vivid: #e8961b;
+  --ember-soft: #fdf1dc;
+
+  --jade: #0d8d75;
+  --jade-vivid: #0fa98c;
+  --jade-soft: #e0f5f0;
+
+  --rose: #c62f40;
+  --rose-soft: #fce9eb;
+
+  --on-brand: #ffffff;
+
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.05), 0 1px 3px oklch(0 0 0 / 0.04);
+  --shadow-md: 0 2px 4px oklch(0 0 0 / 0.04), 0 6px 16px -4px oklch(0 0 0 / 0.08);
+  --shadow-lg: 0 4px 8px oklch(0 0 0 / 0.04), 0 16px 40px -8px oklch(0 0 0 / 0.14);
+  --hairline: oklch(0 0 0 / 0.1);
+}
+
+.dark {
+  --paper: #0f0c16;
+  --surface: #191426;
+  --surface-2: #211b31;
+  --surface-3: #2a2340;
+
+  --ink: #f3f1f8;
+  --ink-2: #b4adc4;
+  --ink-3: #8b8399;
+
+  --line: #2c2540;
+  --line-strong: #3b3253;
+
+  --brand: #8b72ff;
+  --brand-hover: #a38eff;
+  --brand-soft: #241c42;
+  --brand-ring: #8b72ff;
+
+  --ember: #f5b544;
+  --ember-vivid: #f5b544;
+  --ember-soft: #332710;
+
+  --jade: #2ed3b0;
+  --jade-vivid: #2ed3b0;
+  --jade-soft: #0d2e2a;
+
+  --rose: #f5606f;
+  --rose-soft: #33161b;
+
+  --on-brand: #120c24;
+
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.4);
+  --shadow-md: 0 2px 4px oklch(0 0 0 / 0.3), 0 6px 16px -4px oklch(0 0 0 / 0.45);
+  --shadow-lg: 0 4px 8px oklch(0 0 0 / 0.3), 0 16px 40px -8px oklch(0 0 0 / 0.6);
+  --hairline: oklch(1 0 0 / 0.1);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-on-brand: var(--on-brand);
+
+  --color-ember: var(--ember);
+  --color-ember-vivid: var(--ember-vivid);
+  --color-ember-soft: var(--ember-soft);
+
+  --color-jade: var(--jade);
+  --color-jade-vivid: var(--jade-vivid);
+  --color-jade-soft: var(--jade-soft);
+
+  --color-rose: var(--rose);
+  --color-rose-soft: var(--rose-soft);
+
+  --font-display: "Bricolage Grotesque", "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Fluid type scale — no breakpoint jumps between phone and desktop. */
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1rem;
+  --text-micro--letter-spacing: 0.08em;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.125rem;
+  --text-display: clamp(1.875rem, 1.2rem + 3vw, 3.25rem);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.03em;
+  --text-title: clamp(1.25rem, 1rem + 1vw, 1.625rem);
+  --text-title--line-height: 1.15;
+  --text-title--letter-spacing: -0.02em;
+
+  --shadow-card: var(--shadow-sm);
+  --shadow-raised: var(--shadow-md);
+  --shadow-float: var(--shadow-lg);
+
+  --radius-card: 1.25rem;
+
+  --ease-out-soft: cubic-bezier(0.2, 0, 0, 1);
+
+  --animate-link-in: link-in 0.34s cubic-bezier(0.2, 0, 0, 1) both;
+  --animate-rise-in: rise-in 0.4s cubic-bezier(0.2, 0, 0, 1) both;
+  --animate-sheet-in: sheet-in 0.28s cubic-bezier(0.2, 0, 0, 1) both;
+  --animate-scrim-in: scrim-in 0.2s ease-out both;
+  --animate-today-ring: today-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes link-in {
+  from {
+    scale: 0.25;
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+    scale: 0.98;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@keyframes scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes today-ring {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    overflow-x: hidden;
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  /* Every dynamic figure in this app is a number that changes in place. */
+  .figure {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand-ring);
+    outline-offset: 2px;
+    border-radius: 0.375rem;
+  }
+
+  ::selection {
+    background: var(--brand-soft);
+    color: var(--ink);
+  }
+
+  img {
+    outline: 1px solid var(--hairline);
+    outline-offset: -1px;
+  }
+}
+
+@layer utilities {
+  /* Extends a small control to a 44x44 touch target without changing layout. */
+  .hit-44 {
+    position: relative;
+  }
+  .hit-44::after {
+    content: "";
+    position: absolute;
+    inset: 50% 50% 50% 50%;
+    min-width: 44px;
+    min-height: 44px;
+    translate: -50% -50%;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+  }
+
+  .pb-safe {
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

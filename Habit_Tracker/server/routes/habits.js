@@ -1,16 +1,15 @@
 import { Router } from "express";
-import Habit from "../models/Habit.js";
+import Habit from "../models/habit.js";
 import { protect } from "../middleware/auth.js";
+import { resolveCompletionDate } from "../utils/date.js";
 
 const router = Router();
 
 // Every route below requires a valid JWT, and every query is scoped to
-// req.userId so users can only ever see/modify their own habits.
+// req.userId so users can only ever see or modify their own habits.
 router.use(protect);
 
-const getTodayString = () => new Date().toISOString().split("T")[0];
-
-// GET /api/habits - list the logged-in user's habits
+// GET /api/habits - list the signed-in user's habits
 router.get("/", async (req, res) => {
   try {
     const habits = await Habit.find({ userId: req.userId }).sort({ createdAt: 1 });
@@ -20,7 +19,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// POST /api/habits - create a new habit
+// POST /api/habits - create a habit
 router.post("/", async (req, res) => {
   try {
     const { name, frequency } = req.body;
@@ -30,7 +29,7 @@ router.post("/", async (req, res) => {
     }
 
     const habit = await Habit.create({
-      name: name.trim(),
+      name: name.trim().slice(0, 60),
       frequency: frequency === "weekly" ? "weekly" : "daily",
       completions: [],
       userId: req.userId,
@@ -42,21 +41,25 @@ router.post("/", async (req, res) => {
   }
 });
 
-// POST /api/habits/:id/complete - log today's date as completed (rejects duplicates)
+// POST /api/habits/:id/complete - record a completion, rejecting duplicates
 router.post("/:id/complete", async (req, res) => {
   try {
+    const { date, error: dateError } = resolveCompletionDate(req.body?.date);
+    if (dateError) {
+      return res.status(400).json({ error: dateError });
+    }
+
     const habit = await Habit.findOne({ _id: req.params.id, userId: req.userId });
     if (!habit) {
       return res.status(404).json({ error: "Habit not found" });
     }
 
-    const today = getTodayString();
-
-    if (habit.completions.includes(today)) {
-      return res.status(400).json({ error: "Habit already completed today" });
+    if (habit.completions.includes(date)) {
+      return res.status(409).json({ error: "This habit is already marked done for that day" });
     }
 
-    habit.completions.push(today);
+    habit.completions.push(date);
+    habit.completions.sort();
     await habit.save();
 
     res.status(200).json(habit);
@@ -65,16 +68,20 @@ router.post("/:id/complete", async (req, res) => {
   }
 });
 
-// POST /api/habits/:id/uncomplete - undo today's completion (used by the tick toggle)
+// POST /api/habits/:id/uncomplete - undo a completion
 router.post("/:id/uncomplete", async (req, res) => {
   try {
+    const { date, error: dateError } = resolveCompletionDate(req.body?.date);
+    if (dateError) {
+      return res.status(400).json({ error: dateError });
+    }
+
     const habit = await Habit.findOne({ _id: req.params.id, userId: req.userId });
     if (!habit) {
       return res.status(404).json({ error: "Habit not found" });
     }
 
-    const today = getTodayString();
-    habit.completions = habit.completions.filter((date) => date !== today);
+    habit.completions = habit.completions.filter((entry) => entry !== date);
     await habit.save();
 
     res.status(200).json(habit);
@@ -96,7 +103,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// GET /api/habits/:id/history - return the completions array
+// GET /api/habits/:id/history - the raw completions array
 router.get("/:id/history", async (req, res) => {
   try {
     const habit = await Habit.findOne({ _id: req.params.id, userId: req.userId });
