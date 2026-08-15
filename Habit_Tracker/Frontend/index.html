@@ -17,13 +17,12 @@
 
     <title>HabitLoop</title>
 
-    <!-- Set the theme before first paint so there is no light flash on a dark-mode load. -->
+    <!-- Set the saved theme before first paint; new visitors start in light mode. -->
     <script>
       (function () {
         try {
           var stored = localStorage.getItem("habitloop-theme");
-          var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          var theme = stored || (prefersDark ? "dark" : "light");
+          var theme = stored || "light";
           document.documentElement.classList.remove("light", "dark");
           document.documentElement.classList.add(theme);
         } catch (e) {
